@@ -18,19 +18,40 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-#ifndef ADLIB_UTILS_H
-#define ADLIB_UTILS_H
+#include "atomic.h"
 
-#include <cassert>
 
 namespace adlib
 {
 
-  void assertEqual(int a, int b)
-  {
-    assert(a==b);
-  }
-
+DoubleExpression::DoubleExpression(double v) : v(v)
+{
+}
+const DoubleExpression& DoubleExpression::eval_fcn()
+{
+  return this;
 }
 
-#endif // ADLIB_UTILS_H
+// Operation with single input and a single output
+UnaryOperation::UnaryOperation(const Expression& x) : input(x)
+{
+}
+const Expression& UnaryOperation::eval_fcn(const Assignment& a)
+{
+  Expression in = input.eval_fcn(a);
+  return this->fcn(in);
+}
+
+// Operation with two inputs and a asingle output
+BinaryOperation::BinaryOperation(const Expression& x, const Expression& y) :
+    input1(x), input2(y)
+{
+}
+const Expression& BinaryOperation::eval_fcn(const Assignment& a)
+{
+  Expression in1 = input1.eval_fcn(a);
+  Expression in2 = input2.eval_fcn(a);
+  return this->fcn(in1, in2);
+}
+
+} // namespace adlib

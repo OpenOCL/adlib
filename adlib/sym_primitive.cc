@@ -18,19 +18,21 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-#ifndef ADLIB_UTILS_H
-#define ADLIB_UTILS_H
-
-#include <cassert>
+#include "atomic.h"
 
 namespace adlib
 {
 
-  void assertEqual(int a, int b)
-  {
-    assert(a==b);
-  }
-
+SymPrimitive::SymPrimitive(String id)
+{
+  this->id = id;
 }
 
-#endif // ADLIB_UTILS_H
+const Expression& SymPrimitive::eval_fcn(const Assignment& a)
+{
+  return a.get(this);
+}
+
+
+
+} // namespace adlib

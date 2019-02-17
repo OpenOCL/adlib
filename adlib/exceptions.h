@@ -18,18 +18,15 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
+#ifndef ADLIB_EXCEPTIONS_H_
+#define ADLIB_EXCEPTIONS_H_
 
-#ifndef ADLIB_EXCEPTIONS_H
-#define ADLIB_EXCEPTIONS_H
+#include <stdexcept>
 
-#include <exception>
-
-struct AdlibException : public std::exception
+struct AdlibException : public std::runtime_error
 {
-	const char * what () const throw ()
-    {
-    	return exception::what();
-    }
-}
+ public:
+	AdlibException(const char* m) : std::runtime_error(m) { }
+};
 
-#endif // ADLIB_EXCEPTIONS_H
+#endif // ADLIB_EXCEPTIONS_H_

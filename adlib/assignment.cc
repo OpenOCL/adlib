@@ -18,19 +18,30 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-#ifndef ADLIB_UTILS_H
-#define ADLIB_UTILS_H
+#include "assignment.h"
 
-#include <cassert>
+#include "utils.h"
+#include "exceptions.h"
 
-namespace adlib
+namespace adlib {
+
+Assignment::Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l)
 {
-
-  void assertEqual(int a, int b)
-  {
-    assert(a==b);
+  assertEqual(p_l.size(), d_l.size());
+  for (int i=0; i < p_l.size(); i++) {
+    const SymPrimitive& p = p_l[i];
+    assignmentMap[p.id] = d_l[i];
   }
-
 }
 
-#endif // ADLIB_UTILS_H
+double Assignment::get(const std::string& id)
+{
+  const std::map<std::string,double>::iterator el = assignmentMap.find(id);
+  if (el == assignmentMap.end())
+  {
+    throw AdlibException("Assignment element does not exist");
+  }
+  return *el;
+}
+
+} // namespace adlib

@@ -18,19 +18,37 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-#ifndef ADLIB_UTILS_H
-#define ADLIB_UTILS_H
+#ifndef ADLIB_ASSIGNMENT_H_
+#define ADLIB_ASSIGNMENT_H_
 
-#include <cassert>
+#include <string>
+#include <map>
 
-namespace adlib
+#include "typedefs.h"
+#include "atomic.h"
+
+namespace adlib {
+
+// Assigns values to a symbolic primitive.
+class Assignment
 {
+ public:
+  // Constructs and Assignment from symbolic primitives and values.
+  // Args:
+  //  p_l: List of symbolic primitives
+  //  d_l: List of values
+  Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l);
 
-  void assertEqual(int a, int b)
-  {
-    assert(a==b);
-  }
+  // Finds and returns the assigned value for a primitive.
+  // Args:
+  //  id: the id of the primitive
+  double get(const std::string& id);
 
-}
+ private:
+  // stores assigned values
+  const std::map<std::string,double> assignmentMap;
+};
 
-#endif // ADLIB_UTILS_H
+} // namespace adlib
+
+#endif // ADLIB_ASSIGNMENT_H_

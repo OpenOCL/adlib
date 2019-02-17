@@ -18,22 +18,23 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-
 #ifndef ADLIB_TYPEDEFS_H
 #define ADLIB_TYPEDEFS_H
 
 #include <vector>
 #include <string>
 
-namespace adlib
-{
-  typedef std::string string;
-  typedef std::vector vector;
+#include "atomic.h"
 
-  typedef std::vector<Expression> ExpressionList;
-  typedef std::vector<double> DoubleList;
-  typedef std::vector<SymPrimitive> SymPrimitiveList;
+namespace adlib {
 
-}
+class Expression;
+class SymPrimitive;
 
+typedef std::vector<Expression> ExpressionList;
+typedef std::vector<double> DoubleList;
+typedef std::vector<SymPrimitive> SymPrimitiveList;
+
+
+} // namespace adlib
 #endif // ADLIB_TYPEDEFS_H

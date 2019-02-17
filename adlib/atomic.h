@@ -29,131 +29,113 @@
 #ifndef ADLIB_ATOMIC_H_
 #define ADLIB_ATOMIC_H_
 
-#include <map>
 #include <cassert>
 
 #include "typedefs.h"
-
+#include "assignment.h"
 
 namespace adlib
 {
 
-// Assigns values to a symbolic primitive.
-// Args:
-//  p_l: List of symbolic primitives
-//  d_l: List of values
-class Assignment
+class Expression
 {
-  Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l)
-  {
-    assertEqual(p_l.size(), d_l.size());
-    for (int i=0; i < p_l.size(); i++) {
-      assignmentMap[p_l[i].id] = d_l[i];
-    }
-  }
+ public:
+  Expression() {}
+  virtual const Expression& eval_fcn(const Assignment& a) = 0;
+};
 
-  // Finds and returns the assigned value for a primitive
-  // Args:
-  //  id: the id of the primitive
-  const SymPrimitive& get(const string& id)
-  {
-    el = mymap.find(str);
-    if (el == mymap.end())
-    {
-      throw AdlibException("Assignment element does not exist");
-    }
-    return el;
-  }
 
-  // stores assigned values
-  private std::map<string,double> assignmentMap;
-}
-
-class Expression {
-  const &T eval_fcn(const Assignment& a);
-}
-
-class DoubleExpression : Expression
+class DoubleExpression : public Expression
 {
-  DoubleExpression(double v) {
-    this.v = v;
-  }
-  const Expression& eval_fcn() {
-    return this;
-  }
-  private double v;
-}
+ public:
+  DoubleExpression(double v);
+  const DoubleExpression& eval_fcn(const Assignment& a);
 
-class SymPrimitive : Expression
-{
-  SymPrimitive(string id) { this.id = id; }
-  const Expression& eval_fcn(const Assignment& a) {
-    return a.get(this);
+  DoubleExpression operator +(const DoubleExpression& w) {
+    return DoubleExpression(v+w.v);
   }
-  public string id;
-}
+  DoubleExpression operator *(const DoubleExpression& w) {
+    return DoubleExpression(v+w.v);
+  }
+
+  double v;
+};
+
+typedef DoubleExpression T;
+typedef std::vector<DoubleExpression> TL;
 
 // Operation with single input and a single output
-class UnaryOperation : Expression
+class UnaryOperation : public Expression
 {
-  UnaryOperation(const T& x) { input = x; }
-  const Expression& eval_fcn(const Assignment& a) {
-    Expression in = input.eval_fcn(a);
-    return this->fcn(in);
-  }
-  private const Expression& input;
-}
+ public:
+  UnaryOperation(const Expression& x);
+  const Expression& UnaryOperation::eval_fcn(const Assignment& a);
+  virtual T fcn(const T& x) = 0;
+  virtual T der(const T& x, const T& f) = 0;
+ private:
+  const Expression& input;
+};
 
 // Operation with two inputs and a asingle output
-class BinaryOperation : Expression
+class BinaryOperation : public Expression
 {
-  BinaryOperation(const T& x, const T& y)  { input1 = x; input2 = y; }
-  const Expression& eval_fcn(const Assignment& a) {
-    Expression in1 = input1.eval_fcn(a);
-    Expression in2 = input2.eval_fcn(a);
-    return this->fcn(in1, in2);
-  }
-  private const Expression& input1;
-  private const Expression& input2;
-}
+ public:
+  BinaryOperation(const Expression& x, const Expression& y);
+  const Expression& UnaryOperation::eval_fcn(const Assignment& a);
+  virtual T fcn(const T& x, const T& y) = 0;
+  virtual TL der(const T& x, const T& y, const T& f) = 0;
 
-typedef Expression T;
+ private:
+  const Expression& input1;
+  const Expression& input2;
+};
 
-// operator functions
-const &T assign(const T &x) { return Assign(x); }
-const &T add(const T &x, const T &y) { return Addition(x,y); }
-const &T mul(const T &x, const T &y) { return Multiplication(x,y); }
+class SymPrimitive : public Expression
+{
+ public:
+  SymPrimitive(std::string id);
+  const Expression& eval_fcn(const Assignment& a);
+
+  std::string id;
+};
+
 
 
 // unary operations
-class Assignment : UnaryOperation
+class Assign : public UnaryOperation
 {
-  Assignment(const T& x) : UnaryOperation(x) {}
-  static const T& fcn(const T& x) { return x; }
-  static const T& der(const T& x, const T& f) { return {1}; }
-}
+ public:
+  Assign(const Expression& x) : UnaryOperation(x) {}
+  T fcn(const T& x) { return x; }
+  T der(const T& x, const T& f) { return T(1); }
+};
 
 // binary operations
-class Addition : BinaryOperation
+class Addition : public BinaryOperation
 {
-  Addition(const T& x, const T& y) : BinaryOperation(x, y) {}
-  static const T& fcn(const T& x, const T& y) { return  x+y; }
-  static const T& der(const T& x, const T& y, const T& f) { {1, 1}; }
+ public:
+  Addition(const Expression& x, const Expression& y) : BinaryOperation(x, y) {}
+  T fcn(const T& x, const T& y) { return T(x.v+y.v); }
+  TL der(const T& x, const T& y, const T& f) { return {T(1), T(1)}; }
 };
 
-class Multiplication : Atomic
+class Multiplication : public BinaryOperation
 {
-  Multiplication(const T& x, const T& y) : BinaryOperation(x, y) {}
-  void fcn(const T& x, const T& y, T& f) { f = x*y;}
-  void der(const T& x, const T& y, const T& f, T* d) { {y, x}; }
+ public:
+  Multiplication(const Expression& x, const Expression& y) : BinaryOperation(x, y) {}
+  T fcn(const T& x, const T& y) { return T(x.v*y.v);}
+  TL der(const T& x, const T& y, const T& f) { return {y, x}; }
 };
 
 
+// operator functions
+Assign assign(const Expression &x) { return Assign(x); }
+Addition add(const Expression &x, const Expression &y) { return Addition(x,y); }
+Multiplication mul(const Expression &x, const Expression &y) { return Multiplication(x,y); }
 
 
-
-
-
+} // namespace adlib
+#endif // ADLIB_ATOMIC_H_
 
 
 
@@ -512,6 +494,3 @@ class Multiplication : Atomic
 //   void fcn(const T& x, const T& y, T& f) { f = x; }
 //   void der(const T& x, const T& y, const T& f, T* d) { d[0] = 1; d[1] = 0; }
 // };
-
-} // namespace adlib
-#endif // ADLIB_ATOMIC_H_
