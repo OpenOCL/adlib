@@ -30,7 +30,7 @@
 #define ADLIB_ATOMIC_H_
 
 #include <map>
-#include <assert>
+#include <cassert>
 
 #include "typedefs.h"
 
