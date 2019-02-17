@@ -1,13 +1,16 @@
+#include "adlib/atomic.h"
 
 int main()
 {
-  a = adlib.sym();
-  b = adlib.sym();
-  f = adlib.add(adlib.mul(a,b),a)
+  a = adlib.SymPrimitive();
+  b = adlib.SymPrimitive();
 
-  f.eval_fcn({a,b},{4,2});
+  c = adlib.mul(a,b);
+  d = adlib.add(m,a)
 
-  F = Function({a,b},{f});
+  d.eval_fcn(Assignment({a,b},{4,2}));
+
+  F = Function({a,b},{d});
   F(4,2);
 
 }
