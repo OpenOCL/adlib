@@ -2,8 +2,8 @@
 
 int main()
 {
-  a = adlib.SymPrimitive();
-  b = adlib.SymPrimitive();
+  a = adlib.SymPrimitive('a');
+  b = adlib.SymPrimitive('a');
 
   c = adlib.mul(a,b);
   d = adlib.add(m,a)
