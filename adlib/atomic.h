@@ -32,46 +32,37 @@
 #include <cassert>
 
 #include "typedefs.h"
-#include "assignment.h"
 
 namespace adlib
 {
+
+class Assignment;
+
+struct DoubleValue
+{
+  DoubleValue(double v) : v(v) {}
+  double v;
+};
 
 class Expression
 {
  public:
   Expression() {}
-  virtual const Expression& eval_fcn(const Assignment& a) = 0;
+  virtual DoubleValue eval_fcn(const Assignment& a) const = 0;
 };
 
 
-class DoubleExpression : public Expression
-{
- public:
-  DoubleExpression(double v);
-  const DoubleExpression& eval_fcn(const Assignment& a);
-
-  DoubleExpression operator +(const DoubleExpression& w) {
-    return DoubleExpression(v+w.v);
-  }
-  DoubleExpression operator *(const DoubleExpression& w) {
-    return DoubleExpression(v+w.v);
-  }
-
-  double v;
-};
-
-typedef DoubleExpression T;
-typedef std::vector<DoubleExpression> TL;
+typedef DoubleValue T;
+typedef std::vector<DoubleValue> TL;
 
 // Operation with single input and a single output
 class UnaryOperation : public Expression
 {
  public:
   UnaryOperation(const Expression& x);
-  const Expression& UnaryOperation::eval_fcn(const Assignment& a);
-  virtual T fcn(const T& x) = 0;
-  virtual T der(const T& x, const T& f) = 0;
+  virtual T eval_fcn(const Assignment& a) const override;
+  virtual T fcn(const T& x) const = 0;
+  virtual T der(const T& x, const T& f) const = 0;
  private:
   const Expression& input;
 };
@@ -81,9 +72,9 @@ class BinaryOperation : public Expression
 {
  public:
   BinaryOperation(const Expression& x, const Expression& y);
-  const Expression& UnaryOperation::eval_fcn(const Assignment& a);
-  virtual T fcn(const T& x, const T& y) = 0;
-  virtual TL der(const T& x, const T& y, const T& f) = 0;
+  virtual T eval_fcn(const Assignment& a) const override;
+  virtual T fcn(const T& x, const T& y) const = 0;
+  virtual TL der(const T& x, const T& y, const T& f) const = 0;
 
  private:
   const Expression& input1;
@@ -93,10 +84,8 @@ class BinaryOperation : public Expression
 class SymPrimitive : public Expression
 {
  public:
-  SymPrimitive(std::string id);
-  const Expression& eval_fcn(const Assignment& a);
-
-  std::string id;
+  SymPrimitive();
+  T eval_fcn(const Assignment& a) const;
 };
 
 
@@ -106,8 +95,8 @@ class Assign : public UnaryOperation
 {
  public:
   Assign(const Expression& x) : UnaryOperation(x) {}
-  T fcn(const T& x) { return x; }
-  T der(const T& x, const T& f) { return T(1); }
+  T fcn(const T& x) const { return x; }
+  T der(const T& x, const T& f) const { return T(1); }
 };
 
 // binary operations
@@ -115,16 +104,16 @@ class Addition : public BinaryOperation
 {
  public:
   Addition(const Expression& x, const Expression& y) : BinaryOperation(x, y) {}
-  T fcn(const T& x, const T& y) { return T(x.v+y.v); }
-  TL der(const T& x, const T& y, const T& f) { return {T(1), T(1)}; }
+  T fcn(const T& x, const T& y) const { return T(x.v+y.v); }
+  TL der(const T& x, const T& y, const T& f) const { return {T(1), T(1)}; }
 };
 
 class Multiplication : public BinaryOperation
 {
  public:
   Multiplication(const Expression& x, const Expression& y) : BinaryOperation(x, y) {}
-  T fcn(const T& x, const T& y) { return T(x.v*y.v);}
-  TL der(const T& x, const T& y, const T& f) { return {y, x}; }
+  T fcn(const T& x, const T& y) const { return T(x.v*y.v);}
+  TL der(const T& x, const T& y, const T& f) const { return {y, x}; }
 };
 
 

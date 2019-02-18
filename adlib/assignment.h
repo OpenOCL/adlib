@@ -29,14 +29,6 @@
 
 namespace adlib {
 
-struct SymComparator
-{
-  bool operator() (const SymPrimitive& lhs, const SymPrimitive& rhs) const
-  {
-     return std::stoi(lhs.id) < std::stoi(rhs.id);
-  }
-};
-
 // Assigns values to a symbolic primitive.
 class Assignment
 {
@@ -52,12 +44,12 @@ class Assignment
   //  id: the id of the primitive
   double get(const SymPrimitive& sym);
 
-  //
-  static std::map<SymPrimitive,double,SymComparator> defineMap(const SymPrimitiveList& p_l, const DoubleList& d_l);
+  // Initializes the map of assignments
+  static std::map<const SymPrimitive*,double> defineAssignmentMap(const SymPrimitiveList& p_l, const DoubleList& d_l);
 
  private:
   // stores assigned values
-  const std::map<SymPrimitive,double,SymComparator> assignmentMap;
+  const std::map<const SymPrimitive*,double> assignmentMap;
 };
 
 } // namespace adlib

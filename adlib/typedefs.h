@@ -22,11 +22,11 @@
 #define ADLIB_TYPEDEFS_H
 
 #include <vector>
-#include <string>
-
-#include "atomic.h"
 
 namespace adlib {
+
+class Expression;
+class SymPrimitive;
 
 typedef std::vector<Expression> ExpressionList;
 typedef std::vector<double> DoubleList;

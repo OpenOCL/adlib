@@ -24,21 +24,13 @@
 namespace adlib
 {
 
-DoubleExpression::DoubleExpression(double v) : v(v)
-{
-}
-const DoubleExpression& DoubleExpression::eval_fcn()
-{
-  return this;
-}
-
 // Operation with single input and a single output
 UnaryOperation::UnaryOperation(const Expression& x) : input(x)
 {
 }
-const Expression& UnaryOperation::eval_fcn(const Assignment& a)
+DoubleValue UnaryOperation::eval_fcn(const Assignment& a)
 {
-  Expression in = input.eval_fcn(a);
+  DoubleValue in = input.eval_fcn(a);
   return this->fcn(in);
 }
 
@@ -47,10 +39,10 @@ BinaryOperation::BinaryOperation(const Expression& x, const Expression& y) :
     input1(x), input2(y)
 {
 }
-const Expression& BinaryOperation::eval_fcn(const Assignment& a)
+DoubleValue BinaryOperation::eval_fcn(const Assignment& a)
 {
-  Expression in1 = input1.eval_fcn(a);
-  Expression in2 = input2.eval_fcn(a);
+  DoubleValue in1 = input1.eval_fcn(a);
+  DoubleValue in2 = input2.eval_fcn(a);
   return this->fcn(in1, in2);
 }
 

@@ -26,13 +26,13 @@
 namespace adlib {
 
 Assignment::Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l)
-    : assignmentMap(Assignment::defineMap(p_l,d_l))
+    : assignmentMap(Assignment::defineAssignmentMap(p_l,d_l))
 {
 }
 
 double Assignment::get(const SymPrimitive& sym)
 {
-  auto el = assignmentMap.find(sym);
+  auto el = assignmentMap.find(&sym);
   if (el == assignmentMap.end())
   {
     throw AdlibException("Assignment element does not exist");
@@ -40,15 +40,16 @@ double Assignment::get(const SymPrimitive& sym)
   return el->second;
 }
 
-std::map<SymPrimitive,double,SymComparator>
-    Assignment::defineMap(const SymPrimitiveList& p_l, const DoubleList& d_l)
+std::map<const SymPrimitive*,double>
+    Assignment::defineAssignmentMap(const SymPrimitiveList& p_l, const DoubleList& d_l)
 {
-  std::map<SymPrimitive,double,SymComparator> m;
+  std::map<const SymPrimitive*,double> m;
   assertEqual(p_l.size(), d_l.size());
   for (int i=0; i < p_l.size(); i++) {
-    const SymPrimitive& p = p_l[i];
-    m[p] = d_l[i];
+    SymPrimitive p = p_l[i];
+    m[&p] = d_l[i];
   }
+  return m;
 }
 
 } // namespace adlib

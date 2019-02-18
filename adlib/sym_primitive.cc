@@ -18,19 +18,23 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
+#include <string>
+
 #include "atomic.h"
+#include "assignment.h"
 
 namespace adlib
 {
 
-SymPrimitive::SymPrimitive(String id)
+SymPrimitive::SymPrimitive()
 {
-  this->id = id;
 }
 
-const Expression& SymPrimitive::eval_fcn(const Assignment& a)
+DoubleValue SymPrimitive::eval_fcn(const Assignment& a) const
 {
-  return a.get(this);
+  const SymPrimitive& p = *this;
+  double v = a.get(p);
+  return DoubleValue(v);
 }
 
 
