@@ -42,7 +42,7 @@ class Assignment
   // Finds and returns the assigned value for a primitive.
   // Args:
   //  id: the id of the primitive
-  double get(const SymPrimitive& sym);
+  double get(const SymPrimitive& sym) const;
 
   // Initializes the map of assignments
   static std::map<const SymPrimitive*,double> defineAssignmentMap(const SymPrimitiveList& p_l, const DoubleList& d_l);

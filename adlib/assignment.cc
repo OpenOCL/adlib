@@ -30,7 +30,7 @@ Assignment::Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l)
 {
 }
 
-double Assignment::get(const SymPrimitive& sym)
+double Assignment::get(const SymPrimitive& sym) const
 {
   auto el = assignmentMap.find(&sym);
   if (el == assignmentMap.end())
