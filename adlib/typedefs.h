@@ -30,7 +30,7 @@ class SymPrimitive;
 
 typedef std::vector<Expression> ExpressionList;
 typedef std::vector<double> DoubleList;
-typedef std::vector<SymPrimitive> SymPrimitiveList;
+typedef std::vector<SymPrimitive*> SymPrimitiveList;
 
 
 } // namespace adlib

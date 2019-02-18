@@ -22,7 +22,6 @@ mkdir_try(build_dir)
 mkdir_try(obj_dir)
 mkdir_try(bin_dir)
 
-
 includes = '-I ' + os.getcwd() + ' -I ' + include_dir + ' -I ' + src_dir
 
 src_files = ['assignment','sym_primitive','atomic']

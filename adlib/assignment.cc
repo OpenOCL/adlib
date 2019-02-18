@@ -46,8 +46,7 @@ std::map<const SymPrimitive*,double>
   std::map<const SymPrimitive*,double> m;
   assertEqual(p_l.size(), d_l.size());
   for (int i=0; i < p_l.size(); i++) {
-    SymPrimitive p = p_l[i];
-    m[&p] = d_l[i];
+    m[p_l[i]] = d_l[i];
   }
   return m;
 }
