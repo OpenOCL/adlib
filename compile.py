@@ -8,30 +8,49 @@ def pjoin(path_list):
 src_dir = 'adlib'
 test_dir = 'test'
 include_dir = 'include'
+build_dir = 'build'
+obj_dir = os.path.join(build_dir, 'obj')
+
+try:
+    os.mkdir(build_dir)
+    os.mkdir(obj_dir)
+except:
+    pass
 
 includes = '-I ' + os.getcwd() + ' -I ' + include_dir + ' -I ' + src_dir
 
-src_files = ['assignment.cc','sym_primitive.cc','atomic.cc']
-h_files = ['atomic.h','exceptions.h','typedefs.h','utils.h','assignment.h']
+src_files = ['assignment','sym_primitive','atomic']
+h_files = ['atomic','exceptions','typedefs','utils','assignment']
 public_files = []
-test_files = ['test_expression.cc']
+test_files = ['test_expression']
 
-src_files = [os.path.join(src_dir,f) for f in src_files];
-h_files = [os.path.join(src_dir,f) for f in h_files];
-public_files = [os.path.join(include_dir,f) for f in public_files];
-test_files = [os.path.join(test_dir,f) for f in test_files];
+src_paths = [os.path.join(src_dir, f) + '.cc' for f in src_files];
+h_paths = [os.path.join(src_dir, f) + '.h' for f in h_files];
+public_paths = [os.path.join(include_dir, f) + '.h' for f in public_files];
+test_paths = [os.path.join(test_dir, f) + '.cc' for f in test_files];
+
+obj_paths = [os.path.join(obj_dir, f) + '.o' for f in src_files];
+test_obj_paths = [os.path.join(obj_dir, f) + '.o' for f in test_files];
 
 # compile command string
 hasError = False
-for s in src_files:
-    print("Compiling "+s+"....")
+for s,o in zip(src_paths,obj_paths):
+    print("Compiling source "+s+"....")
     if hasError:
         break
-    compile_str = 'g++ -c '  + s +  ' ' + includes
+    compile_str = 'g++ -c '  + s +  ' ' + includes + ' -o ' + o
     p = subprocess.run(compile_str, shell=True)
     hasError = p.returncode
 
-link_str = "g++ -o test_expression test_expression.o"
+for s,o in zip(test_paths,test_obj_paths):
+    print("Compiling test "+s+"....")
+    if hasError:
+        break
+    compile_str = 'g++ -c '  + s +  ' ' + includes + ' -o ' + o
+    p = subprocess.run(compile_str, shell=True)
+    hasError = p.returncode
+
+link_str = "g++ -o test_expression " + " ".join(obj_paths) + ' ' + " ".join(test_obj_paths)
 
 p = subprocess.run(compile_str, shell=True)
 if p.returncode == 0:

@@ -26,7 +26,8 @@
 namespace adlib
 {
 
-  void assertEqual(int a, int b)
+
+  static void assertEqual(double a, double b)
   {
     assert(a==b);
   }

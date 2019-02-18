@@ -118,9 +118,9 @@ class Multiplication : public BinaryOperation
 
 
 // operator functions
-Assign assign(const Expression &x) { return Assign(x); }
-Addition add(const Expression &x, const Expression &y) { return Addition(x,y); }
-Multiplication mul(const Expression &x, const Expression &y) { return Multiplication(x,y); }
+static Assign assign(const Expression &x) { return Assign(x); }
+static Addition add(const Expression &x, const Expression &y) { return Addition(x,y); }
+static Multiplication mul(const Expression &x, const Expression &y) { return Multiplication(x,y); }
 
 
 } // namespace adlib
