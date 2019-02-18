@@ -27,7 +27,7 @@ for s in src_files:
     print("Compiling "+s+"....")
     if hasError:
         break
-    compile_str = 'g++ -c '  + s + ' ' + ' ' + includes
+    compile_str = 'g++ -c '  + s +  ' ' + includes
     p = subprocess.run(compile_str, shell=True)
     hasError = p.returncode
 
