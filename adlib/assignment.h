@@ -37,19 +37,19 @@ class Assignment
   // Args:
   //  p_l: List of symbolic primitives
   //  d_l: List of values
-  Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l);
+  Assignment(const SymbolicList& p_l, const DoubleList& d_l);
 
   // Finds and returns the assigned value for a primitive.
   // Args:
   //  id: the id of the primitive
-  double get(const SymPrimitive& sym) const;
+  double get(const Symbolic& sym) const;
 
   // Initializes the map of assignments
-  static std::map<const SymPrimitive*,double> defineAssignmentMap(const SymPrimitiveList& p_l, const DoubleList& d_l);
+  static std::map<const Symbolic*,double> defineAssignmentMap(const SymbolicList& p_l, const DoubleList& d_l);
 
  private:
   // stores assigned values
-  const std::map<const SymPrimitive*,double> assignmentMap;
+  const std::map<const Symbolic*,double> assignmentMap;
 };
 
 } // namespace adlib

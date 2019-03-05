@@ -25,12 +25,12 @@
 
 namespace adlib {
 
-Assignment::Assignment(const SymPrimitiveList& p_l, const DoubleList& d_l)
+Assignment::Assignment(const SymbolicList& p_l, const DoubleList& d_l)
     : assignmentMap(Assignment::defineAssignmentMap(p_l,d_l))
 {
 }
 
-double Assignment::get(const SymPrimitive& sym) const
+double Assignment::get(const Symbolic& sym) const
 {
   auto el = assignmentMap.find(&sym);
   if (el == assignmentMap.end())
@@ -40,12 +40,12 @@ double Assignment::get(const SymPrimitive& sym) const
   return el->second;
 }
 
-std::map<const SymPrimitive*,double>
-    Assignment::defineAssignmentMap(const SymPrimitiveList& p_l, const DoubleList& d_l)
+std::map<const Symbolic*,double> Assignment::defineAssignmentMap(
+    const SymbolicList& p_l, const DoubleList& d_l)
 {
-  std::map<const SymPrimitive*,double> m;
+  std::map<const Symbolic*,double> m;
   assertEqual(p_l.size(), d_l.size());
-  for (int i=0; i < p_l.size(); i++) {
+  for (unsigned int i=0; i < p_l.size(); i++) {
     m[p_l[i]] = d_l[i];
   }
   return m;

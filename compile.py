@@ -18,6 +18,8 @@ build_dir = 'build'
 obj_dir = os.path.join(build_dir, 'obj')
 bin_dir = 'bin'
 
+cflags = '-g -Wall -Wextra -std=c++14 -Wfatal-errors -Wno-unused-parameter'
+
 mkdir_try(build_dir)
 mkdir_try(obj_dir)
 mkdir_try(bin_dir)
@@ -39,23 +41,28 @@ test_obj_paths = [os.path.join(obj_dir, f) + '.o' for f in test_files];
 test_bin_paths = [os.path.join(bin_dir, f) for f in test_files];
 
 # compile command string
+hasError = False
 for s,o in zip(src_paths,obj_paths):
-    print("Compiling source "+s+"....")
-    compile_str = 'g++ -c '  + s +  ' ' + includes + ' -o ' + o
-    p = subprocess.run(compile_str, shell=True)
-    hasError = p.returncode
     if hasError:
         break
+    print("Compiling source "+s+"....")
+    compile_str = 'g++ -c ' + cflags + ' '  + s +  ' ' + includes + ' -o ' + o
+    p = subprocess.run(compile_str, shell=True)
+    hasError = p.returncode
+
 
 for s,o in zip(test_paths,test_obj_paths):
-    print("Compiling test "+s+"....")
-    compile_str = 'g++ -c '  + s +  ' ' + includes + ' -o ' + o
-    p = subprocess.run(compile_str, shell=True)
-    hasError = p.returncode
     if hasError:
         break
+    print("Compiling test "+s+"....")
+    compile_str = 'g++ -c ' + cflags + ' '  + s +  ' ' + includes + ' -o ' + o
+    p = subprocess.run(compile_str, shell=True)
+    hasError = p.returncode
+
 
 for o,b in zip(test_obj_paths,test_bin_paths):
+    if hasError:
+        break
     link_str = "g++ " + o + ' ' + pjoin(obj_paths) + ' -o ' + b
     print("Linking test " + b  + " ....")
     subprocess.run(link_str, shell=True)

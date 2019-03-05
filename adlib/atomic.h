@@ -36,24 +36,16 @@
 namespace adlib
 {
 
-class Assignment;
+typedef double T;
 
-struct DoubleValue
-{
-  DoubleValue(double v) : v(v) {}
-  double v;
-};
+class Assignment;
 
 class Expression
 {
  public:
   Expression() {}
-  virtual DoubleValue eval_fcn(const Assignment& a) const = 0;
+  virtual T eval_fcn(const Assignment& a) const = 0;
 };
-
-
-typedef DoubleValue T;
-typedef std::vector<DoubleValue> TL;
 
 // Operation with single input and a single output
 class UnaryOperation : public Expression
@@ -61,8 +53,8 @@ class UnaryOperation : public Expression
  public:
   UnaryOperation(const Expression& x);
   virtual T eval_fcn(const Assignment& a) const override;
-  virtual T fcn(const T& x) const = 0;
-  virtual T der(const T& x, const T& f) const = 0;
+  virtual void fcn(const T& x, T *f) const = 0;
+  virtual void der(const T& x, const T& f, T *dx) const = 0;
  private:
   const Expression& input;
 };
@@ -73,21 +65,20 @@ class BinaryOperation : public Expression
  public:
   BinaryOperation(const Expression& x, const Expression& y);
   virtual T eval_fcn(const Assignment& a) const override;
-  virtual T fcn(const T& x, const T& y) const = 0;
-  virtual TL der(const T& x, const T& y, const T& f) const = 0;
+  virtual void fcn(const T& x, const T& y, T *f) const = 0;
+  virtual void der(const T& x, const T& y, const T& f, T *dx, T *dy) const = 0;
 
  private:
   const Expression& input1;
   const Expression& input2;
 };
 
-class SymPrimitive : public Expression
+class Symbolic : public Expression
 {
  public:
-  SymPrimitive();
+  Symbolic();
   T eval_fcn(const Assignment& a) const;
 };
-
 
 
 // unary operations
@@ -95,8 +86,8 @@ class Assign : public UnaryOperation
 {
  public:
   Assign(const Expression& x) : UnaryOperation(x) {}
-  T fcn(const T& x) const { return x; }
-  T der(const T& x, const T& f) const { return T(1); }
+  void fcn(const T& x, T *f) const { *f = x; }
+  void der(const T& x, const T& f, T *dx) const { *dx = 1; }
 };
 
 // binary operations
@@ -104,24 +95,56 @@ class Addition : public BinaryOperation
 {
  public:
   Addition(const Expression& x, const Expression& y) : BinaryOperation(x, y) {}
-  T fcn(const T& x, const T& y) const { return T(x.v+y.v); }
-  TL der(const T& x, const T& y, const T& f) const { return {T(1), T(1)}; }
+  void fcn(const T& x, const T& y, T *f) const { *f = x + y; }
+  void der(const T& x, const T& y, const T& f, T *dx, T *dy) const { *dx = 1; *dy = 1; }
 };
 
 class Multiplication : public BinaryOperation
 {
  public:
   Multiplication(const Expression& x, const Expression& y) : BinaryOperation(x, y) {}
-  T fcn(const T& x, const T& y) const { return T(x.v*y.v);}
-  TL der(const T& x, const T& y, const T& f) const { return {y, x}; }
+  void fcn(const T& x, const T& y, T *f) const { *f = x * y; }
+  void der(const T& x, const T& y, const T& f, T *dx, T *dy) const { *dx = y; *dy = x; }
 };
 
 
-// operator functions
-static Assign assign(const Expression &x) { return Assign(x); }
-static Addition add(const Expression &x, const Expression &y) { return Addition(x,y); }
-static Multiplication mul(const Expression &x, const Expression &y) { return Multiplication(x,y); }
 
+// Operation with single input and a single output
+inline UnaryOperation::UnaryOperation(const Expression& x)
+    : input(x)
+{
+}
+
+inline T UnaryOperation::eval_fcn(const Assignment& a) const
+{
+  T in = input.eval_fcn(a);
+  T result;
+  this->fcn(in, &result);
+  return result;
+}
+
+// Operation with two inputs and a asingle output
+inline BinaryOperation::BinaryOperation(const Expression& x, const Expression& y)
+    : input1(x), input2(y)
+{
+}
+
+inline T BinaryOperation::eval_fcn(const Assignment& a) const
+{
+  T in1 = input1.eval_fcn(a);
+  T in2 = input2.eval_fcn(a);
+  T result;
+  this->fcn(in1, in2, &result);
+  return result;
+}
+
+
+
+
+// static operator functions
+static inline Assign assign(const Expression &x) { return Assign(x); }
+static inline Addition add(const Expression &x, const Expression &y) { return Addition(x,y); }
+static inline Multiplication mul(const Expression &x, const Expression &y) { return Multiplication(x,y); }
 
 } // namespace adlib
 #endif // ADLIB_ATOMIC_H_

@@ -24,27 +24,6 @@
 namespace adlib
 {
 
-// Operation with single input and a single output
-UnaryOperation::UnaryOperation(const Expression& x)
-    : input(x)
-{
-}
-DoubleValue UnaryOperation::eval_fcn(const Assignment& a) const
-{
-  DoubleValue in = input.eval_fcn(a);
-  return this->fcn(in);
-}
 
-// Operation with two inputs and a asingle output
-BinaryOperation::BinaryOperation(const Expression& x, const Expression& y)
-    : input1(x), input2(y)
-{
-}
-DoubleValue BinaryOperation::eval_fcn(const Assignment& a) const
-{
-  DoubleValue in1 = input1.eval_fcn(a);
-  DoubleValue in2 = input2.eval_fcn(a);
-  return this->fcn(in1, in2);
-}
 
 } // namespace adlib

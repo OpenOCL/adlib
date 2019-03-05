@@ -26,11 +26,11 @@
 namespace adlib {
 
 class Expression;
-class SymPrimitive;
+class Symbolic;
 
 typedef std::vector<Expression> ExpressionList;
 typedef std::vector<double> DoubleList;
-typedef std::vector<SymPrimitive*> SymPrimitiveList;
+typedef std::vector<Symbolic*> SymbolicList;
 
 
 } // namespace adlib

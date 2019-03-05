@@ -26,16 +26,17 @@
 namespace adlib
 {
 
-SymPrimitive::SymPrimitive()
+Symbolic::Symbolic()
 {
 }
 
-DoubleValue SymPrimitive::eval_fcn(const Assignment& a) const
+T Symbolic::eval_fcn(const Assignment& a) const
 {
-  const SymPrimitive& p = *this;
-  double v = a.get(p);
-  return DoubleValue(v);
+  const Symbolic& p = *this;
+  T v = a.get(p);
+  return v;
 }
+
 
 
 
