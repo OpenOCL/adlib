@@ -27,9 +27,14 @@ namespace adlib
 {
 
 
-  static void assertEqual(double a, double b)
+  static inline void assertEqual(double a, double b)
   {
     assert(a==b);
+  }
+
+  static inline void assertAlmostEqual(double a, double b, double eps=1e-4)
+  {
+    assert(abs(a-b)<eps);
   }
 
 }

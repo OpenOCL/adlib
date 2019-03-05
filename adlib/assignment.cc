@@ -22,6 +22,7 @@
 
 #include "utils.h"
 #include "exceptions.h"
+#include "atomic.h"
 
 namespace adlib {
 

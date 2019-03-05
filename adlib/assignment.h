@@ -25,14 +25,18 @@
 #include <map>
 
 #include "typedefs.h"
-#include "atomic.h"
 
 namespace adlib {
+
+class Symbolic;
 
 // Assigns values to a symbolic primitive.
 class Assignment
 {
  public:
+
+   Assignment() { }
+
   // Constructs and Assignment from symbolic primitives and values.
   // Args:
   //  p_l: List of symbolic primitives

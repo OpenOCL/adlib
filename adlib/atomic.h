@@ -31,26 +31,35 @@
 
 #include <cassert>
 
+#include "exceptions.h"
 #include "typedefs.h"
+#include "assignment.h"
 
 namespace adlib
 {
 
 typedef double T;
 
-class Assignment;
-
 class Expression
 {
  public:
-  Expression() {}
+  Expression() {
+  }
+
   virtual T eval_fcn(const Assignment& a) const = 0;
+  virtual T eval_fcn() { return eval_fcn(Assignment()); }
+
+  virtual T eval_fcn(const std::initializer_list<Symbolic*>& s, const std::initializer_list<T>& v) const {
+    return eval_fcn( Assignment(s,v) );
+  }
+
 };
 
 // Operation with single input and a single output
 class UnaryOperation : public Expression
 {
  public:
+  using Expression::eval_fcn;
   UnaryOperation(const Expression& x);
   virtual T eval_fcn(const Assignment& a) const override;
   virtual void fcn(const T& x, T *f) const = 0;
@@ -63,6 +72,7 @@ class UnaryOperation : public Expression
 class BinaryOperation : public Expression
 {
  public:
+  using Expression::eval_fcn;
   BinaryOperation(const Expression& x, const Expression& y);
   virtual T eval_fcn(const Assignment& a) const override;
   virtual void fcn(const T& x, const T& y, T *f) const = 0;
@@ -73,6 +83,14 @@ class BinaryOperation : public Expression
   const Expression& input2;
 };
 
+class Numeric : public Expression
+{
+ public:
+  Numeric(T v) : v(v) { }
+  T eval_fcn(const Assignment& a) const { return v; }
+  T v;
+};
+
 class Symbolic : public Expression
 {
  public:
@@ -81,14 +99,18 @@ class Symbolic : public Expression
 };
 
 
+//
+// Operator classes
+
 // unary operations
 class Assign : public UnaryOperation
 {
- public:
+public:
   Assign(const Expression& x) : UnaryOperation(x) {}
   void fcn(const T& x, T *f) const { *f = x; }
   void der(const T& x, const T& f, T *dx) const { *dx = 1; }
 };
+
 
 // binary operations
 class Addition : public BinaryOperation
@@ -108,6 +130,9 @@ class Multiplication : public BinaryOperation
 };
 
 
+
+//
+// Definitions
 
 // Operation with single input and a single output
 inline UnaryOperation::UnaryOperation(const Expression& x)
@@ -137,6 +162,8 @@ inline T BinaryOperation::eval_fcn(const Assignment& a) const
   this->fcn(in1, in2, &result);
   return result;
 }
+
+
 
 
 
